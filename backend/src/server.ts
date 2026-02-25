@@ -19,7 +19,8 @@ const app = fastify(
 
 //Se registran middlewares
 app.register(cors, {
-    origin: '*', // Permite solicitudes desde cualquier origen
+    origin: '*', // Permite solicitudes desde cualquier origen}
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Métodos HTTP permitidos
 });
 
 // Registrar el plugin JWT
