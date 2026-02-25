@@ -1,0 +1,19 @@
+{
+    "message": "Usuario creado con éxito",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ4ZTY2YzJmLTRmMGItNGIzZS1hZTM1LTIxYjAzY2Y0NWE0MyIsImVtYWlsIjoicmNoYXZlenJpb3NAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzcyMDM4NDk2fQ.8Q84encsqKveDBioDQ3OWMi4Q3212YNYZCszAoMRW74",
+    "user": {
+        "id": "48e66c2f-4f0b-4b3e-ae35-21b03cf45a43",
+        "email": "rchavezrios@gmail.com",
+        "role": "ADMIN"
+    }
+}
+
+{
+    "message": "Inicio de sesión exitoso",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ4ZTY2YzJmLTRmMGItNGIzZS1hZTM1LTIxYjAzY2Y0NWE0MyIsImVtYWlsIjoicmNoYXZlenJpb3NAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzcyMDM4NzUzfQ.w4wMsAiymD7Wy9MRo4xaexzHfFnCwsk73-P8THaSTfo",
+    "user": {
+        "id": "48e66c2f-4f0b-4b3e-ae35-21b03cf45a43",
+        "email": "rchavezrios@gmail.com",
+        "role": "ADMIN"
+    }
+}

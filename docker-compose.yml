@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: task_manager_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: cambienestacontrasena
+      POSTGRES_DB: taskdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgDatabase:/var/lib/postgresql/data
+
+volumes:
+  pgDatabase:
