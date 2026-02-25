@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Trash2, Plus } from "lucide-react"; // Importamos íconos
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ interface Task {
 }
 
 export function Dashboard() {
+  const [filter, setFilter] = useState<"ALL" | "PENDING" | "COMPLETED">("ALL");
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,12 +24,18 @@ export function Dashboard() {
   const [newDescription, setNewDescription] = useState("");
 
   // 1. OBTENER TAREAS
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
 
+    setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/tasks", {
+      let url = "http://localhost:3000/api/tasks";
+      if (filter !== "ALL") {
+        url += `?status=${filter}`;
+      }
+
+      const response = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (response.ok) {
@@ -40,11 +47,11 @@ export function Dashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate, filter]);
 
   useEffect(() => {
     fetchTasks();
-  }, [navigate]);
+  }, [fetchTasks]);
 
   // 2. CREAR TAREA 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -147,6 +154,31 @@ export function Dashboard() {
             <Plus className="w-4 h-4 mr-2" /> Agregar
           </Button>
         </form>
+
+        {/* Filtros de Estado */}
+        <div className="flex gap-2">
+          <Button 
+            variant={filter === "ALL" ? "default" : "outline"} 
+            onClick={() => setFilter("ALL")}
+            size="sm"
+          >
+            Todas
+          </Button>
+          <Button 
+            variant={filter === "PENDING" ? "default" : "outline"} 
+            onClick={() => setFilter("PENDING")}
+            size="sm"
+          >
+            Pendientes
+          </Button>
+          <Button 
+            variant={filter === "COMPLETED" ? "default" : "outline"} 
+            onClick={() => setFilter("COMPLETED")}
+            size="sm"
+          >
+            Completadas
+          </Button>
+        </div>
 
         {/* Tabla de Tareas */}
         <div className="border rounded-lg bg-card overflow-hidden">

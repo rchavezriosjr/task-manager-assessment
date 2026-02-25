@@ -104,6 +104,9 @@ export function Login() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Cargando..." : "Iniciar Sesión"}
             </Button>
+            <Button type="button" variant="ghost" className="w-full ms-3" onClick={() => navigate("/register")}>
+                ¿No tienes cuenta? Regístrate aquí
+            </Button>
           </CardFooter>
         </form>
       </Card>
