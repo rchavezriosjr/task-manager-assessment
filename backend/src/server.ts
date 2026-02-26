@@ -1,4 +1,4 @@
-//Importaciones (Frameworks, librerías, modulos, etc.)
+// Imports (frameworks, libraries, modules, etc.)
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
@@ -10,42 +10,42 @@ import { taskRoutes } from './routes/tasks';
 
 dotenv.config();
 
-//Instanciar el Server
+// Instantiate the server
 const app = fastify(
     {
-        logger: true // Habilita el logger para registrar las solicitudes y respuestas en la consola
+        logger: true // Enable logger to record requests and responses in the console
     }
 );
 
-//Se registran middlewares
+// Register middlewares
 app.register(cors, {
-    origin: '*', // Permite solicitudes desde cualquier origen}
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Métodos HTTP permitidos
+    origin: '*', // Allow requests from any origin
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
 });
 
-// Registrar el plugin JWT
+// Register JWT plugin
 app.register(fastifyJwt, {
   secret: process.env.JWT_SECRET as string,
 });
 
-//Registrar rutas de autenticacion (usando /api para no confundirme)
+// Register authentication routes (using /api to avoid confusion)
 app.register(authRoutes, { prefix: '/api/auth' });
-// Rutas de tareas
+// Task routes
 app.register(taskRoutes, { prefix: '/api/tasks' });
 
-//Ruta Test
+// Test route
 app.get('/ping', async (request, reply) => {
     return {status: 'ok', message: 'Manoloooo'};
 });
 
-//Iniciar el servidor
+// Start the server
 const start = async () => {
   try {
     await sql`SELECT 1`.execute(db);
-    console.log('Conexion a la Base de Datos establecida con exito.');
+    console.log('Connection to the database was successful');
 
     await app.listen({ port: 3000, host: '0.0.0.0' });
-    console.log('Servidor corriendo en http://localhost:3000');
+    console.log('Server running at http://localhost:3000');
   } catch (err) {
     app.log.error(err);
     process.exit(1);

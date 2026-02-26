@@ -3,19 +3,19 @@ import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
 import dotenv from 'dotenv';
 
-// Cargamos las variables del archivo .env
+// Load variables from the .env file
 dotenv.config();
 
-// Configurar instrucciones para PostgreSQL
+// Set up configuration for PostgreSQL
 const dialect = new PostgresDialect({
-  // Creamos un Pool de conexiones
+  // Create a connection pool
   pool: new Pool({
     connectionString: process.env.DATABASE_URL,
-    max: 10, // Máximo de conexiones simultáneas permitidas
+    max: 10, // Maximum allowed simultaneous connections
   })
 });
 
-// Instanciamos y exportamos nuestra conexión a la base de datos
+// Instantiate and export our database connection
 export const db = new Kysely<Database>({
   dialect,
 });

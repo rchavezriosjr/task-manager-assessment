@@ -9,28 +9,28 @@ async function migrateToLatest() {
     provider: new FileMigrationProvider({
       fs,
       path,
-      // Le decimos dónde encontrar nuestras migraciones
+      // Tell it where to find our migrations
       migrationFolder: path.join(__dirname, 'migrations'),
     }),
   });
 
-  // Ejecutamos las migraciones
+  // Run the migrations
   const { error, results } = await migrator.migrateToLatest();
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.log(`SUCCESS - Migración "${it.migrationName}" ejecutada con éxito.`);
+      console.log(`SUCCESS - "${it.migrationName}"`);
     } else if (it.status === 'Error') {
-      console.error(`ERROR en la migración "${it.migrationName}".`);
+      console.error(`ERROR  "${it.migrationName}".`);
     }
   });
 
   if (error) {
-    console.error('ERROR fatal al migrar:', error);
+    console.error('FATAL ERROR:', error);
     process.exit(1);
   }
 
-  // Cerramos la conexión para que el script termine
+  // Close the connection so the script can finish
   await db.destroy();
 }
 

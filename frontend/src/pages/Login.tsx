@@ -6,25 +6,25 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function Login() {
-  // 1. Estados de React para guardar lo que el usuario escribe
+  // 1. React state hooks to store what the user types
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
-  // Estados para la experiencia de usuario (UX)
+  // State for user experience (UX)
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  //Hook para redireccionar a otras páginas
+  // Hook to redirect to other pages
   const navigate = useNavigate();
 
-  // 2. Función que se ejecuta al enviar el formulario
+  // 2. Function that runs when the form is submitted
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue
+    e.preventDefault(); // Prevents the page from reloading
     setError("");
     setIsLoading(true);
 
     try {
-      // 3. Consumiendo API de Fastify con Fetch
+      // 3. Consuming Fastify API with Fetch
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: {
@@ -36,23 +36,23 @@ export function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Si el backend responde con error (ej. 401 Credenciales inválidas)
-        throw new Error(data.error || "Error al iniciar sesión");
+        // If the backend responds with an error (e.g. 401 invalid credentials)
+        throw new Error(data.error || "Error logging in");
       }
 
-      // 4. Guardamos el Token JWT en el navegador
-      // localStorage guarda el token incluso si el usuario cierra la pestaña
+      // 4. Save the JWT token in the browser
+      // localStorage keeps the token even if the user closes the tab
       localStorage.setItem("token", data.token);
       
-      // Prueba de Funcionamiento
-      //alert(`¡Bienvenido ${data.user.email}! Token guardado.`);
+      // Test run
+      //alert(`Welcome ${data.user.email}! Token saved.`);
       navigate("/dashboard");
       
 
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setIsLoading(false); // Apagamos el estado de carga sin importar si falló o fue exitoso
+      setIsLoading(false); // Turn off loading state regardless of success or failure
     }
   };
 
@@ -60,16 +60,16 @@ export function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Bienvenido</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center">
-            Ingresa tus credenciales para acceder a tus tareas
+            Enter your credentials to access your tasks
           </CardDescription>
         </CardHeader>
         
-        {/* Usamos onSubmit en un formulario real para permitir enviar con la tecla 'Enter' */}
+        {/* We use onSubmit on a real form to allow submitting with the 'Enter' key */}
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
-            {/* Mensaje de error visual */}
+            {/* Visual error message */}
             {error && (
               <div className="bg-red-100 text-red-600 p-3 rounded-md text-sm">
                 {error}
@@ -77,11 +77,11 @@ export function Login() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email">Email</Label>
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="admin@miprueba.com" 
+                placeholder="admin@mytest.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -89,7 +89,7 @@ export function Login() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -102,10 +102,10 @@ export function Login() {
           
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Cargando..." : "Iniciar Sesión"}
+              {isLoading ? "Loading..." : "Log In"}
             </Button>
             <Button type="button" variant="ghost" className="w-full ms-3" onClick={() => navigate("/register")}>
-                ¿No tienes cuenta? Regístrate aquí
+                Don't have an account? Sign Up here
             </Button>
           </CardFooter>
         </form>

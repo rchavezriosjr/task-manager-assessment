@@ -1,48 +1,69 @@
-# 🚀 Task Manager Pro - Prueba Técnica Full-Stack
+# 🚀 Task Manager Pro - Full-Stack Technical Test
 
-Esta es una aplicación de gestión de tareas Full-Stack construida para demostrar buenas prácticas de arquitectura, seguridad y diseño moderno.
+This is a full-stack task management application built to demonstrate good architecture, security, and modern design practices.
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Technology Stack
 * **Backend:** Node.js, Fastify, TypeScript, Kysely (Query Builder), PostgreSQL, JWT, Bcrypt.
 * **Frontend:** React, Vite, TypeScript, Tailwind CSS, shadcn/ui.
-* **Infraestructura:** Docker & Docker Compose.
+* **Infrastructure:** Docker & Docker Compose.
 
-## ⚙️ Requisitos Previos
-* Node.js (v18 o superior)
-* Docker y Docker Desktop corriendo en tu máquina.
+## ⚙️ Prerequisites
+* Node.js (v18 or higher)
+* Docker and Docker Desktop running on your machine.
 
-## 🚀 Guía de Inicio Rápido
+## 🚀 Quick Start Guide
 
-### 1. Levantar la Base de Datos
-Desde la raíz del proyecto, enciende el contenedor de PostgreSQL:
+### 1. Start the Database
+From the project root, start the PostgreSQL container:
 \`\`\`bash
 docker compose up -d
 \`\`\`
 
-### 2. Configurar y Encender el Backend
+### 2. Set Up and Start the Backend
 \`\`\`bash
 cd backend
 npm install
 \`\`\`
-* Crea un archivo `.env` basado en el `.env.example`.
-* Ejecuta las migraciones para crear las tablas:
+* Create a `.env` file based on `.env.example`.
+* Run the migrations to create the tables:
 \`\`\`bash
 npm run migrate
 \`\`\`
-* Inicia el servidor de desarrollo:
+* Start the development server:
 \`\`\`bash
 npm run dev
 \`\`\`
 
-### 3. Configurar y Encender el Frontend (En otra terminal)
+### 3. Set Up and Start the Frontend (in another terminal)
 \`\`\`bash
 cd frontend
 npm install
 npm run dev
 \`\`\`
 
-## 🌟 Características Principales (Bonus Points completados)
-* Autenticación segura con JWT y encriptación de contraseñas.
-* **Sistema de Roles:** Soporte para usuarios 'ADMIN' y 'USER' en la base de datos.
-* **Paginación en BD:** El endpoint de tareas soporta límite y desplazamiento nativo en SQL (`?page=1&limit=10`).
-* **UI Moderna:** Interfaz accesible y responsiva usando `shadcn/ui` y Tailwind CSS.
+## 🌟 Key Features (Bonus Points completed)
+* Secure authentication with JWT and password hashing.
+* **Role System:** Supports 'ADMIN' and 'USER' roles in the database.
+* **DB Pagination:** Tasks endpoint supports native SQL limit/offset (`?page=1&limit=10`).
+* **Modern UI:** Accessible, responsive interface using `shadcn/ui` and Tailwind CSS.
+
+## 📖 API Documentation
+
+All requests to task routes (`/api/tasks`) require a valid JWT in the headers:
+`Authorization: Bearer <your_token>`
+
+### 🔐 Authentication (`/api/auth`)
+
+| Method | Endpoint | Description | Body (JSON) |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/auth/signup` | Register a new user | `{ "email": "x@x.com", "password": "123", "role": "USER" }` |
+| **POST** | `/api/auth/login` | Log in and receive a JWT | `{ "email": "x@x.com", "password": "123" }` |
+
+### 📋 Tasks (`/api/tasks`)
+
+| Method | Endpoint | Description | Query Params / Body |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/api/tasks` | Get the logged-in user’s task list | **Query:** `?page=1&limit=5&status=PENDING` (optional) |
+| **POST** | `/api/tasks` | Create a new task | **Body:** `{ "title": "Study React", "description": "..." }` |
+| **PATCH** | `/api/tasks/:id` | Update a task’s status | **Body:** `{ "status": "COMPLETED" }` |
+| **DELETE**| `/api/tasks/:id` | Delete a task by ID | *None* |

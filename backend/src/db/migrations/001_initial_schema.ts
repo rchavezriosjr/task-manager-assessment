@@ -1,9 +1,9 @@
 import { Kysely, sql } from 'kysely';
 
-//Construye la base de datos
+// Build the database
 export async function up(db: Kysely<any>): Promise<void> {
   
-  // Crear la tabla de Usuarios
+  // Create users table
   await db.schema
     .createTable('users')
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
@@ -13,7 +13,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`).notNull())
     .execute();
 
-  // Crear la tabla de Tareas
+  // Create tasks table
   await db.schema
     .createTable('tasks')
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))

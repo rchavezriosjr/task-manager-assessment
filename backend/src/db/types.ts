@@ -1,6 +1,6 @@
 import { Generated } from 'kysely';
 
-//Tabla de Usuarios
+// Users table
 export interface UsersTable {
   id: Generated<string>;
   email: string;
@@ -9,7 +9,7 @@ export interface UsersTable {
   created_at: Generated<Date>;
 }
 
-//Tabla de Tareas
+// Tasks table
 export interface TasksTable {
   id: Generated<string>;
   title: string;
@@ -19,7 +19,7 @@ export interface TasksTable {
   created_at: Generated<Date>;
 }
 
-//Exportamos el Esquema
+// Export the schema
 export interface Database {
   users: UsersTable;
   tasks: TasksTable;

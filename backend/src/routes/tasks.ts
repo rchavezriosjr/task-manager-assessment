@@ -3,28 +3,28 @@ import { db } from '../db';
 
 export async function taskRoutes(app: FastifyInstance) {
   
-  // Verifica que el usuario haya enviado un token válido en los Headers.
+  // Verify the user sent a valid token in the headers.
   app.addHook('onRequest', async (request, reply) => {
     try {
       await request.jwtVerify();
     } catch (err) {
-      return reply.status(401).send({ error: 'No autorizado. Token inválido o faltante.' });
+      return reply.status(401).send({ error: 'Forbidden - Invalid or missing token' });
     }
   });
 
   // --------------------------------------------------------
-  // 1. CREAR UNA TAREA (POST)
+  // 1. CREATE A TASK (POST)
   // --------------------------------------------------------
   app.post('/', async (request, reply) => {
-    // request.user contiene los datos del token decodificado (id, email, role)
+    // request.user contains decoded token data (id, email, role)
     const user = request.user as { id: string; role: string };
     const { title, description } = request.body as any;
 
     if (!title) {
-      return reply.status(400).send({ error: 'El título de la tarea es obligatorio' });
+      return reply.status(400).send({ error: 'Title is required' });
     }
 
-    // Insertamos la nueva tarea en la base de datos, asociándola al usuario que la creó (user.id)
+    // Insert the new task into the database, associating it with the user who created it (user.id)
     const newTask = await db.insertInto('tasks')
       .values({
         title,
@@ -38,15 +38,15 @@ export async function taskRoutes(app: FastifyInstance) {
   });
 
   // --------------------------------------------------------
-  // 2. OBTENER LAS TAREAS (GET) + Filtros + Paginación 
+  // 2. GET TASKS (GET) + Filters + Pagination 
   // --------------------------------------------------------
   app.get('/', async (request, reply) => {
     const user = request.user as { id: string; role: string };
     
-    // Extraemos de la URL los parámetros (ej: ?status=PENDING&page=1&limit=10)
-    const { status, page = 1, limit = 10 } = request.query as any;
+    // Extract parameters from the URL (e.g. ?status=PENDING&page=1&limit=10)
+    const { status, page = 1, limit = 3 } = request.query as any;
 
-    // Convertimos a números para la paginación de SQL
+    // Convert to numbers for SQL pagination
     const pageNum = Number(page);
     const limitNum = Number(limit);
     const offset = (pageNum - 1) * limitNum;
@@ -55,17 +55,17 @@ export async function taskRoutes(app: FastifyInstance) {
     let query = db.selectFrom('tasks').selectAll();
 
 
-    // Si NO es admin, forzamos a que solo vea las suyas.
+    // If NOT admin, force them to only see their own.
     if (user.role !== 'ADMIN') {
       query = query.where('user_id', '=', user.id);
     }
 
-    // Aplicar Filtro de Estado (Si el usuario lo mandó)
+    // Apply status filter (if the user provided it)
     if (status) {
       query = query.where('status', '=', status);
     }
 
-    // Aplicar Paginación
+    // Apply pagination
     query = query.limit(limitNum).offset(offset).orderBy('created_at', 'desc');
 
     const tasks = await query.execute();
@@ -79,44 +79,44 @@ export async function taskRoutes(app: FastifyInstance) {
   });
 
   // --------------------------------------------------------
-  // 3. ACTUALIZAR UNA TAREA (PATCH)
+  // 3. UPDATE A TASK (PATCH)
   // --------------------------------------------------------
-  // Usamos un parámetro dinámico en la URL: /:id
+  // We use a dynamic parameter in the URL: /:id
   app.patch('/:id', async (request, reply) => {
     const user = request.user as { id: string; role: string };
     const { id } = request.params as { id: string };
     const { title, description, status } = request.body as any;
 
-    // Solo actualizamos los campos que el usuario haya enviado
+    // Only update the fields the user sent
     const updateData: any = {};
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (status !== undefined) updateData.status = status;
 
-    // Si no envió nada para actualizar, respondemos con error
+    // If nothing was sent to update, respond with an error
     if (Object.keys(updateData).length === 0) {
-      return reply.status(400).send({ error: 'No se enviaron datos para actualizar' });
+      return reply.status(400).send({ error: 'No data was sent to update' });
     }
 
-    // Ejecutamos la actualización
+    // Execute the update
     const updatedTask = await db.updateTable('tasks')
       .set(updateData)
       .where('id', '=', id)
-      //Nadie puede modificar una tarea que no sea suya
+      // No one can modify a task that isn't theirs
       .where('user_id', '=', user.id) 
       .returningAll()
       .executeTakeFirst();
 
-    // Si updatedTask es indefinido, significa que el ID no existe O no le pertenece al usuario
+    // If updatedTask is undefined, the ID doesn't exist OR it doesn't belong to the user
     if (!updatedTask) {
-      return reply.status(404).send({ error: 'Tarea no encontrada o no tienes permisos' });
+      return reply.status(404).send({ error: 'Task not found or you do not have permission to update it' });
     }
 
     return reply.send(updatedTask);
   });
 
   // --------------------------------------------------------
-  // 4. BORRAR UNA TAREA (DELETE)
+  // 4. DELETE A TASK (DELETE)
   // --------------------------------------------------------
   app.delete('/:id', async (request, reply) => {
     const user = request.user as { id: string; role: string };
@@ -129,9 +129,9 @@ export async function taskRoutes(app: FastifyInstance) {
       .executeTakeFirst();
 
     if (!deletedTask) {
-      return reply.status(404).send({ error: 'Tarea no encontrada o no tienes permisos' });
+      return reply.status(404).send({ error: 'Task not found or you do not have permission to delete it' });
     }
 
-    return reply.send({ message: 'Tarea eliminada con éxito', deletedTask });
+    return reply.send({ message: 'Task deleted successfully', deletedTask });
   });
 }

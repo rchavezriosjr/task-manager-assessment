@@ -2,94 +2,94 @@ import { FastifyInstance } from 'fastify';
 import bcrypt from 'bcrypt';
 import { db } from '../db';
 
-// Exportar rutas
+// Export routes
 export async function authRoutes(app: FastifyInstance) {
   
-  // Endpoint para registrar un usuario (Sign Up)
+  // Endpoint to register a user (Sign Up)
   app.post('/signup', async (request, reply) => {
-    // 1. Extraemos los datos que el usuario envia en el body de la peticion
+    // 1. Extract the data the user sends in the request body
     const { email, password, role } = request.body as any;
 
     if (!email || !password) {
-      return reply.status(400).send({ error: 'Datos Incompletos, revise e intente de nuevo' });
+      return reply.status(400).send({ error: 'Incomplete data, please check and try again' });
     }
 
-    // 2. Verificamos que el correo no este registrado ya
+    // 2. Check that the email isn't already registered
     const existingUser = await db.selectFrom('users')
       .selectAll()
       .where('email', '=', email)
       .executeTakeFirst();
 
     if (existingUser) {
-      return reply.status(409).send({ error: 'Este email ya está en uso' });
+      return reply.status(409).send({ error: 'Email already in use' });
     }
 
-    // 3. Encriptamos la contraseña
+    // 3. Encrypt the password
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // 4. Guardamos el nuevo usuario en la base de datos
+    // 4. Save the new user to the database
     const newUser = await db.insertInto('users')
       .values({
         email,
         password_hash: passwordHash,
-        role: role || 'USER', // Si no mandan rol, por defecto es USER
+        role: role || 'USER', // If no role is sent, default to USER
       })
-      .returningAll() // Le pedimos a Kysely que nos devuelva los datos creados
+      .returningAll() // Ask Kysely to return the created data
       .executeTakeFirstOrThrow();
 
-    // 5. Generamos el JWT (JSON WEB TOKEN)
+    // 5. Generate the JWT (JSON WEB TOKEN)
     const token = app.jwt.sign({ 
       id: newUser.id, 
       email: newUser.email, 
       role: newUser.role 
     });
 
-    // 6. Respondemos al cliente con código 201 (creado) y el token
+    // 6. Respond to the client with status 201 (created) and the token
     return reply.status(201).send({
-      message: 'Usuario creado con éxito',
+      message: 'User created successfully',
       token,
       user: { id: newUser.id, email: newUser.email, role: newUser.role }
     });
   });
 
-  // Endpoint para iniciar sesión (Login)
+  // Endpoint to log in (Login)
   app.post('/login', async (request, reply) => {
     const { email, password } = request.body as any;
 
     if (!email || !password) {
-      return reply.status(400).send({ error: 'El email y el password son requeridos' });
+      return reply.status(400).send({ error: 'Email/Password Required' });
     }
 
-    // 1. Buscamos al usuario en la base de datos por su email
+    // 1. Look up the user in the database by email
     const user = await db.selectFrom('users')
       .selectAll()
       .where('email', '=', email)
       .executeTakeFirst();
 
-    // Si no existe, damos un mensaje genérico por seguridad
+    // If none exists, give a generic message for security
     if (!user) {
-      return reply.status(401).send({ error: 'Credenciales inválidas' });
+      return reply.status(401).send({ error: 'Invalid Credentials' });
     }
 
-    // 2. Comparamos la contraseña en texto plano con el Hash guardado
-    // bcrypt hace la matemática pesada para saber si coinciden
+    // 2. Compare the plaintext password with the stored hash
+    // bcrypt does the heavy math to verify a match
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
-      return reply.status(401).send({ error: 'Credenciales inválidas' });
+      return reply.status(401).send({ error: 'Invalid Credentials' });
     }
 
-    // 3. Si todo está bien, generamos un nuevo JWT
+    // 3. If everything checks out, generate a new JWT
     const token = app.jwt.sign({ 
       id: user.id, 
       email: user.email, 
       role: user.role 
     });
 
-    // 4. Se lo enviamos al cliente
+    // 4. Send it back to the client
     return reply.status(200).send({
-      message: 'Inicio de sesión exitoso',
+      message: 'Successfully logged in',
       token,
       user: { id: user.id, email: user.email, role: user.role }
     });

@@ -18,11 +18,11 @@ export function Register() {
     setIsLoading(true);
 
     try {
-      // Apuntamos al endpoint de Sign Up
+      // Point to the Sign Up endpoint
       const response = await fetch("http://localhost:3000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Mandamos el rol por defecto (el backend igual lo pone si no lo enviamos)
+        // Send the default role (backend also sets it if we omit it)
         body: JSON.stringify({ email, password, role: "USER" }), 
       });
 
@@ -30,7 +30,7 @@ export function Register() {
 
       if (!response.ok) throw new Error(data.error || "Error al registrarse");
 
-      // Guardamos el token y vamos al Dashboard
+      // Save the token and navigate to the Dashboard
       localStorage.setItem("token", data.token);
       navigate("/dashboard");
 
@@ -45,9 +45,9 @@ export function Register() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Crear Cuenta</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
           <CardDescription className="text-center">
-            Regístrate para empezar a gestionar tus tareas
+            Sign up to start managing your tasks
           </CardDescription>
         </CardHeader>
         
@@ -68,11 +68,11 @@ export function Register() {
           
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creando cuenta..." : "Registrarse"}
+              {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
-            {/* Botón para volver al login */}
+            {/* Button to go back to login */}
             <Button type="button" variant="ghost" className="w-full" onClick={() => navigate("/login")}>
-              ¿Ya tienes cuenta? Inicia sesión
+              Already have an account? Log In
             </Button>
           </CardFooter>
         </form>
