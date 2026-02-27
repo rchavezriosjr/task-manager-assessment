@@ -15,31 +15,31 @@ This is a full-stack task management application built to demonstrate good archi
 
 ### 1. Start the Database
 From the project root, start the PostgreSQL container:
-\`\`\`bash
+```bash
 docker compose up -d
-\`\`\`
+```
 
 ### 2. Set Up and Start the Backend
-\`\`\`bash
+```bash
 cd backend
 npm install
-\`\`\`
+```
 * Create a `.env` file based on `.env.example`.
 * Run the migrations to create the tables:
-\`\`\`bash
+```bash
 npm run migrate
-\`\`\`
+```
 * Start the development server:
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 ### 3. Set Up and Start the Frontend (in another terminal)
-\`\`\`bash
+```bash
 cd frontend
 npm install
 npm run dev
-\`\`\`
+```
 
 ## 🌟 Key Features (Bonus Points completed)
 * Secure authentication with JWT and password hashing.
