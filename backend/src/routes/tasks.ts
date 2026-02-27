@@ -51,18 +51,27 @@ export async function taskRoutes(app: FastifyInstance) {
     const limitNum = Number(limit);
     const offset = (pageNum - 1) * limitNum;
 
-    // Empezamos a construir la consulta base
-    let query = db.selectFrom('tasks').selectAll();
+    // Query to get tasks, joining with users to also get the email of the task owner.
+    let query = db.selectFrom('tasks')
+    .innerJoin('users', 'tasks.user_id', 'users.id')
+    .select([
+      'tasks.id',
+      'tasks.title',
+      'tasks.description',
+      'tasks.status',
+      'tasks.created_at',
+      'users.email as userEmail'
+    ]);
 
 
     // If NOT admin, force them to only see their own.
     if (user.role !== 'ADMIN') {
-      query = query.where('user_id', '=', user.id);
+      query = query.where('tasks.user_id', '=', user.id);
     }
 
     // Apply status filter (if the user provided it)
     if (status) {
-      query = query.where('status', '=', status);
+      query = query.where('tasks.status', '=', status);
     }
 
     // Apply pagination

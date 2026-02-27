@@ -32,6 +32,9 @@ export function Register() {
 
       // Save the token and navigate to the Dashboard
       localStorage.setItem("token", data.token);
+      //localStorage keeps the role and email for easy access across the app (optional, since we can decode the token)
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("role", data.user.role);
       navigate("/dashboard");
 
     } catch (err: any) {

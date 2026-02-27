@@ -12,12 +12,16 @@ interface Task {
   title: string;
   description: string;
   status: "PENDING" | "COMPLETED";
+  userEmail?: string; // Optional, only for admins
 }
 
 export function Dashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient(); // For resetting the cache
   
+  const userRole= localStorage.getItem("role")||"USER"; // Get the user role from localStorage (optional, since we can decode the token)
+  const userLoggedEmail = localStorage.getItem("email")||"";
+
   // Local state (filter, pagination and form)
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "COMPLETED">("ALL");
   const [page, setPage] = useState(1);
@@ -108,7 +112,7 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-background p-8">
       <header className="flex justify-between items-center mb-8 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold">My Tasks</h1>
+        <h1 className="text-3xl font-bold">My Tasks ({userLoggedEmail})</h1>
         <Button variant="outline" onClick={handleLogout}>Log Out</Button>
       </header>
 
@@ -116,8 +120,8 @@ export function Dashboard() {
         
         {/* Formulario Crear */}
         <form onSubmit={handleCreateTask} className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg bg-card">
-          <Input placeholder="Título" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="flex-1" />
-          <Input placeholder="Descripción (opcional)" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} className="flex-1" />
+          <Input placeholder="Title" maxLength={250} minLength={3} required value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="flex-1" />
+          <Input placeholder="Description (optional)" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} className="flex-1" />
           <Button type="submit" disabled={createTaskMutation.isPending}>
             <Plus className="w-4 h-4 mr-2" /> 
             {createTaskMutation.isPending ? "Adding..." : "Add"}
@@ -152,6 +156,7 @@ export function Dashboard() {
                     <TableHead>Title</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Status</TableHead>
+                    {userRole === "ADMIN" && <TableHead>Owner</TableHead>}
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -165,6 +170,11 @@ export function Dashboard() {
                       <TableCell>
                         <Badge variant={task.status === "COMPLETED" ? "default" : "secondary"}>{task.status}</Badge>
                       </TableCell>
+                      {userRole === "ADMIN" && (
+                        <TableCell className="text-muted-foreground text-sm font-medium">
+                          {task.userEmail}
+                        </TableCell>
+                      )}
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" onClick={() => toggleStatusMutation.mutate(task)}>
                           <Check className={`w-4 h-4 ${task.status === "COMPLETED" ? "text-green-500" : "text-gray-400"}`} />

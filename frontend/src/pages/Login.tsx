@@ -43,8 +43,12 @@ export function Login() {
       // 4. Save the JWT token in the browser
       // localStorage keeps the token even if the user closes the tab
       localStorage.setItem("token", data.token);
-      
-      // Test run
+
+      //localStorage keeps the role and email for easy access across the app (optional, since we can decode the token)
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("role", data.user.role);
+
+      // Test route
       //alert(`Welcome ${data.user.email}! Token saved.`);
       navigate("/dashboard");
       
