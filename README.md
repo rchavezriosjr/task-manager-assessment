@@ -80,12 +80,13 @@ To evaluate the Admin dashboard, you can create an Admin account using Postman (
 
 **POST** `http://localhost:3000/api/auth/signup`
 **Headers:** `Content-Type: application/json`
-**Body:**
+**Body (JSON):**
 ```json
 {
   "email": "admin@taskmanager.com",
   "password": "securepassword123",
   "role": "ADMIN"
 }
+```
 
 Once the account is created via the API, simply log in through the Frontend UI using these credentials. You will instantly see the Admin privileges applied to the Dashboard.
